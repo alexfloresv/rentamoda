@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+//table client
+model Client {
+  id          Int      @id @default(autoincrement())
+  name        String  // Opcional, porque no todos los clientes se registrarán.
+  phone       String?  @unique
+  email       String?  @unique
+  sessionId   String   // Para identificar sesiones únicas (por cookies o token).
+  createdAt   DateTime @default(now())
+
+  pageViews PageView[]
+  feedbacks Feedback[]
+  webinarRegistrants WebinarRegistrant[]
+  likes Like[]
+}
+//table page_view
+model PageView {
+  id          Int      @id @default(autoincrement())
+  clientId    Int     // Relación opcional si el usuario se registra.
+  client      Client  @relation(fields: [clientId], references: [id])
+  pageId     Int
+  page      Page   @relation(fields: [pageId], references: [id])
+  duration    Int?     // Tiempo en segundos que el usuario pasó en la página.
+  timestamp   DateTime @default(now()) 
+  interactions Interaction[]
+  likes Like[]
+}
+//table page
+model Page {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique //nombre de la pagina (home, about, contact, etc.)
+  createdAt   DateTime @default(now())
+  pageViews PageView[]
+
+}
+//table interaction
+model Interaction {
+  id          Int      @id @default(autoincrement())
+  pageViewId  Int
+  pageView    PageView     @relation(fields: [pageViewId], references: [id])
+  actionId    Int
+  action      Action   @relation(fields: [actionId], references: [id])
+  timestamp   DateTime @default(now())
+}
+//table action
+model Action{
+  id          Int      @id @default(autoincrement())
+  name        String   @unique //nombre de la accion click, view, etc.
+  interactions Interaction[]
+}
+
+//table webinar
+model Webinar {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  scheduledAt DateTime
+  registrants WebinarRegistrant[]
+}
+//table webinar_registrant
+model WebinarRegistrant {
+  id          Int      @id @default(autoincrement())
+  clientId    Int
+  client      Client   @relation(fields: [clientId], references: [id])
+  webinarId   Int
+  webinar     Webinar  @relation(fields: [webinarId], references: [id])
+  registeredAt DateTime @default(now())
+}
+//table feedback
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  clientId    Int
+  client      Client @relation(fields: [clientId], references: [id])
+  feedback    String   // Opinión o comentario.
+  timestamp   DateTime @default(now())
+}
+
+//table like
+model Like {
+  id          Int      @id @default(autoincrement())
+  clientId    Int
+  client      Client   @relation(fields: [clientId], references: [id])
+  pageViewId  Int
+  pageView    PageView @relation(fields: [pageViewId], references: [id])
+  productId   Int?      // producto que tiene like opcional para que no sea necesario tener un producto si no le dara like al prodcuto sino  a otra cosa
+  product     Product?  @relation(fields: [productId], references: [id])
+  like        Boolean
+  createdAt   DateTime @default(now())
+}
+//table product
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  available   Boolean
+  urlImage    String
+  likes       Like[]   // Relación inversa
+}
