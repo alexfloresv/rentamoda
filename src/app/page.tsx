@@ -1,15 +1,11 @@
-import { HeroSection } from "@/components/sections/hero"
-import { ProductsShowcase } from "@/components/sections/products-showcase"
-import { WhyRentPreview } from "@/components/sections/why-rent-preview"
-import { WebinarCTA } from "@/components/sections/webinar-cta"
-
-export default function HomePage() {
+function HomePage() {
   return (
-    <>
-      <HeroSection />
-      <ProductsShowcase />
-      <WhyRentPreview />
-      <WebinarCTA />
-    </>
+    <section className="h-[calc(100vh-7rem)] flex justify-center items-center">
+      <div>
+        <h1 className="text-white text-5xl">Home Page</h1>
+      </div>
+    </section>
   )
 }
+
+export default HomePage
