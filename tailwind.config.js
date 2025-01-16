@@ -1,4 +1,5 @@
 import { fontFamily } from "tailwindcss/defaultTheme"
+import animate from "tailwindcss-animate"
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -68,5 +69,5 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 }

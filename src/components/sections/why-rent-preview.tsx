@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { LikeButton } from "@/components/ui/like-button"
 import { Clock, Package, Shield, Crown } from 'lucide-react'

@@ -7,6 +7,8 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
+import { createOrUpdateClient } from '@/app/_actions/client'
+import { generateSessionId } from '@/lib/utils'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
@@ -31,8 +33,14 @@ export function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
   const onSubmit = async (data: RegisterForm) => {
     try {
       setIsLoading(true)
-      // Aquí irá la lógica para guardar el registro
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulación
+      const result = await createOrUpdateClient({
+        ...data,
+        sessionId: generateSessionId()
+      })
+      
+      if (!result.success) {
+        throw new Error(result.error)
+      }
       toast({
         title: '¡Registro exitoso!',
         description: 'Te has registrado correctamente al webinar.',

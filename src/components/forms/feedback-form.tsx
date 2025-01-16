@@ -7,6 +7,8 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
+import { createFeedback } from '@/app/_actions/client'
+import { useClientId } from '@/hooks/use-client-id'
 
 const feedbackSchema = z.object({
   feedback: z.string().min(10, 'El feedback debe tener al menos 10 caracteres'),
@@ -17,6 +19,7 @@ type FeedbackForm = z.infer<typeof feedbackSchema>
 export function FeedbackForm({ onSuccess }: { onSuccess: () => void }) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const clientId = useClientId()
 
   const {
     register,
@@ -29,14 +32,20 @@ export function FeedbackForm({ onSuccess }: { onSuccess: () => void }) {
   const onSubmit = async (data: FeedbackForm) => {
     try {
       setIsLoading(true)
-      // Aquí irá la lógica para guardar el feedback
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulación
+      const result = await createFeedback({
+        feedback: data.feedback,
+        clientId: clientId
+      })
+      
+      if (!result.success) {
+        throw new Error(result.error)
+      }
       toast({
         title: '¡Gracias por tu feedback!',
         description: 'Tu opinión es muy importante para nosotros.',
       })
       onSuccess()
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Hubo un error al enviar tu feedback. Por favor, intenta de nuevo.',
